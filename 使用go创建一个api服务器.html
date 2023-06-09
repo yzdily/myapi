@@ -1,0 +1,226 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>使用go创建一个api服务器</title>
+  <link rel="stylesheet" href="https://stackedit.io/style.css" />
+</head>
+
+<body class="stackedit">
+  <div class="stackedit__html"><p></p><div class="toc"><h3>文章目录</h3><ul><li><a href="#_Go__5">安装 Go 编程环境。</a></li><li><a href="#_Go__8">创建一个新的 Go 模块。</a></li><li><a href="#_16">安装和引入必要的依赖项。</a></li><li><a href="#_API__28">编写 API 注册处理函数</a></li><li><a href="#_HTTP__38">启动 HTTP 服务器</a></li><li><a href="#_Swagger_UI_API__72">搭建一个 Swagger UI API 服务器可以分为以下步骤：</a></li><ul><li><a href="#1_API__89">步骤1：编写 API 代码</a></li><li><a href="#2_swag__132">步骤2：安装 swag 工具</a></li><li><a href="#3_Swagger_UI_140">步骤3：下载并配置 Swagger UI</a></li><li><a href="#4_HTTP__208">步骤4：启动 HTTP 服务器</a></li></ul></ul></div><p></p>
+<hr>
+<h1><a id="_Go__5"></a>安装 Go 编程环境。</h1>
+<p>如果还没有安装 Go 环境，请访问 官网 下载适用于您操作系统的版本，并按照说明进行安装。</p>
+<h1><a id="_Go__8"></a>创建一个新的 Go 模块。</h1>
+<p>在开发新的 Go 应用程序时，最好创建一个新的模块以管理依赖性。您可以使用以下命令来创建一个新的模块：</p>
+<p>mkdir myapi<br>
+cd myapi<br>
+go mod init myapi</p>
+<h1><a id="_16"></a>安装和引入必要的依赖项。</h1>
+<p>在开发 API 服务器时，通常需要使用一些第三方库来处理 HTTP 请求、路由、身份验证和数据存储等功能。您可以使用 go get 命令来下载并安装这些库。例如，以下命令将下载并安装 gorilla/mux 库：</p>
+<p>go get github.com/gorilla/mux<br>
+引入该库只需在 Go 代码中导入即可：</p>
+<p>import “github.com/gorilla/mux”<br>
+有了这个库，您就可以使用 mux.NewRouter() 函数创建一个新的路由器，并使用 router.HandleFunc() 函数来定义路由规则。</p>
+<h1><a id="_API__28"></a>编写 API 注册处理函数</h1>
+<p>在定义路由后，需要为每个路由注册处理函数。定义处理函数，以便当客户端请求匹配的 API 端点时，路由程序将调用该函数。</p>
+<p>go<br>
+func getUsers(w http.ResponseWriter, r *http.Request) {<br>
+// 处理 GET /api/users 请求<br>
+}<br>
+在以上示例中，getUsers 函数在 /api/users 路径上注册了 GET 处理程序。使用 http.ResponseWriter 可以向客户端发送响应，并从 http.Request 对象中获取请求信息。</p>
+<h1><a id="_HTTP__38"></a>启动 HTTP 服务器</h1>
+<p>最后，在 Go 代码的 main() 函数中启动 HTTP 服务器：</p>
+<p>go<br>
+func main() {<br>
+router := mux.NewRouter()<br>
+router.HandleFunc(“/api/users”, getUsers).Methods(“GET”)<br>
+log.Fatal(http.ListenAndServe(“:8000”, router))<br>
+}<br>
+在这个例子里，我们使用了 http.ListenAndServe() 函数来启动一个 HTTP 服务器，监听本地 8000 端口，mux.NewRouter() 函数创建了一个新的路由器，router.HandleFunc() 函数用于注册 /api/users 路径上的 GET 处理程序。</p>
+<pre><code class="prism language-bash">package main
+<span class="token function">import</span> <span class="token punctuation">(</span>
+	<span class="token string">"fmt"</span>
+	<span class="token string">"log"</span>
+	<span class="token string">"net/http"</span>
+	<span class="token string">"github.com/gorilla/mux"</span>
+<span class="token punctuation">)</span>
+func getUsers<span class="token punctuation">(</span>w http.ResponseWriter, r *http.Request<span class="token punctuation">)</span><span class="token punctuation">{</span>
+	fmt.Fprintf<span class="token punctuation">(</span>w, <span class="token string">"Get All Users Endpoint Hit"</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+
+func <span class="token function-name function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+	router :<span class="token operator">=</span> mux.NewRouter<span class="token punctuation">(</span><span class="token punctuation">)</span>
+	router.HandleFunc<span class="token punctuation">(</span><span class="token string">"/api/users"</span>, getUsers<span class="token punctuation">)</span>.Methods<span class="token punctuation">(</span><span class="token string">"Get"</span><span class="token punctuation">)</span>
+	log.Fatal<span class="token punctuation">(</span>http.ListenAndServe<span class="token punctuation">(</span><span class="token string">":8000"</span>, router<span class="token punctuation">))</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<p><img src="https://img-blog.csdnimg.cn/1bed78b9ec284f658b5fcd4083c31bd0.png" alt="在这里插入图片描述"></p>
+<h1><a id="_Swagger_UI_API__72"></a>搭建一个 Swagger UI API 服务器可以分为以下步骤：</h1>
+<ol>
+<li>
+<p>在 Go 语言中编写 API 代码，并添加 Swagger 标记注释。</p>
+</li>
+<li>
+<p>安装 swag 工具，以便将您的 Swagger 注释标记转换为 Swagger 规范文档。</p>
+</li>
+<li>
+<p>下载并配置 Swagger UI，以便能够通过 Web 界面浏览和测试您的 API。</p>
+</li>
+<li>
+<p>启动 HTTP 服务器，以便您的客户端能够连接到您的 API 并使用 Swagger UI 测试工具。</p>
+</li>
+</ol>
+<p>下面是一个简单的示例，演示如何使用 Go 语言、swag 和 Swagger UI 搭建一个 Swagger UI API 服务器。</p>
+<h2><a id="1_API__89"></a>步骤1：编写 API 代码</h2>
+<p>首先，您需要编写您的 API 代码，并添加 Swagger 标记注释。在这个例子里，我们创建了一个 /hello 路径，当用户访问该路径时，会返回一个固定的 JSON 响应。我们在这个函数上添加了 Swagger 注释标记，用于说明该路径和响应格式。</p>
+<pre><code class="prism language-bash">package main
+
+<span class="token function">import</span> <span class="token punctuation">(</span>
+	<span class="token string">"encoding/json"</span>
+	<span class="token string">"net/http"</span>
+
+	<span class="token string">"github.com/gorilla/mux"</span>
+<span class="token punctuation">)</span>
+
+<span class="token builtin class-name">type</span> response struct <span class="token punctuation">{</span>
+	Message string <span class="token variable"><span class="token variable">`</span>json:<span class="token string">"message"</span><span class="token variable">`</span></span>
+<span class="token punctuation">}</span>
+
+// hello godoc
+// @Summary 返回问候消息
+// @Description 返回一个带有问候信息的JSON响应
+// @Tags hello
+// @Produce json
+// @Success <span class="token number">200</span> <span class="token punctuation">{</span>object<span class="token punctuation">}</span> response
+// @Router /hello <span class="token punctuation">[</span>get<span class="token punctuation">]</span>
+func hello<span class="token punctuation">(</span>w http.ResponseWriter, r *http.Request<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+	w.Header<span class="token punctuation">(</span><span class="token punctuation">)</span>.Set<span class="token punctuation">(</span><span class="token string">"Content-Type"</span>, <span class="token string">"application/json"</span><span class="token punctuation">)</span>
+	json.NewEncoder<span class="token punctuation">(</span>w<span class="token punctuation">)</span>.Encode<span class="token punctuation">(</span>response<span class="token punctuation">{</span>
+		Message: <span class="token string">"Hello, world!"</span>,
+	<span class="token punctuation">}</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+
+func <span class="token function-name function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+	router :<span class="token operator">=</span> mux.NewRouter<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+	router.HandleFunc<span class="token punctuation">(</span><span class="token string">"/hello"</span>, hello<span class="token punctuation">)</span>.Methods<span class="token punctuation">(</span><span class="token string">"GET"</span><span class="token punctuation">)</span>
+
+	http.ListenAndServe<span class="token punctuation">(</span><span class="token string">":8000"</span>, router<span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<p><img src="https://img-blog.csdnimg.cn/7d7777fe47fd4036865ab4c6982a35d3.png" alt="在这里插入图片描述"></p>
+<h2><a id="2_swag__132"></a>步骤2：安装 swag 工具</h2>
+<p>接下来，您需要安装 swag 工具，以便将您的 Swagger 注释标记转换为 Swagger 规范文档。</p>
+<p>在终端窗口中运行以下命令，以安装 swag：</p>
+<p>go get -u github.com/swaggo/swag/cmd/swag</p>
+<h2><a id="3_Swagger_UI_140"></a>步骤3：下载并配置 Swagger UI</h2>
+<p>接下来，您需要下载并配置 Swagger UI，以便能够通过 Web 界面浏览和测试您的 API。您可以从 Swagger UI GitHub 仓库 下载最新版本的 Swagger UI。将下载的文件解压缩到您的项目目录中的一个子目录中。在这个例子里，我们将其解压缩到 ./swagger-ui 目录中。</p>
+<p>要配置 Swagger UI，请编辑 index.html 文件，并将其中的 url 属性设置为您的 Swagger 规范文档的 URL。在这个例子里，我们将其设置为 /swagger/doc.json，因为 swag 工具默认会将规范文档保存在此位置。</p>
+<pre><code class="prism language-bash"><span class="token operator">&lt;</span><span class="token operator">!</span>DOCTYPE html<span class="token operator">&gt;</span>
+<span class="token operator">&lt;</span>html<span class="token operator">&gt;</span>
+
+<span class="token operator">&lt;</span>head<span class="token operator">&gt;</span>
+    <span class="token operator">&lt;</span>meta <span class="token assign-left variable">charset</span><span class="token operator">=</span><span class="token string">"UTF-8"</span><span class="token operator">&gt;</span>
+    <span class="token operator">&lt;</span>title<span class="token operator">&gt;</span>Swagger UI<span class="token operator">&lt;</span>/title<span class="token operator">&gt;</span>
+    <span class="token operator">&lt;</span>link <span class="token assign-left variable">rel</span><span class="token operator">=</span><span class="token string">"stylesheet"</span> <span class="token assign-left variable">type</span><span class="token operator">=</span><span class="token string">"text/css"</span> <span class="token assign-left variable">href</span><span class="token operator">=</span><span class="token string">"./swagger-ui.css"</span><span class="token operator">&gt;</span>
+    <span class="token operator">&lt;</span>link <span class="token assign-left variable">rel</span><span class="token operator">=</span><span class="token string">"icon"</span> <span class="token assign-left variable">type</span><span class="token operator">=</span><span class="token string">"image/png"</span> <span class="token assign-left variable">href</span><span class="token operator">=</span><span class="token string">"./favicon-32x32.png"</span> <span class="token assign-left variable">sizes</span><span class="token operator">=</span><span class="token string">"32x32"</span> /<span class="token operator">&gt;</span>
+    <span class="token operator">&lt;</span>link <span class="token assign-left variable">rel</span><span class="token operator">=</span><span class="token string">"icon"</span> <span class="token assign-left variable">type</span><span class="token operator">=</span><span class="token string">"image/png"</span> <span class="token assign-left variable">href</span><span class="token operator">=</span><span class="token string">"./favicon-16x16.png"</span> <span class="token assign-left variable">sizes</span><span class="token operator">=</span><span class="token string">"16x16"</span> /<span class="token operator">&gt;</span>
+    <span class="token operator">&lt;</span>style<span class="token operator">&gt;</span>
+        html <span class="token punctuation">{</span>
+            box-sizing: border-box<span class="token punctuation">;</span>
+            overflow: -moz-scrollbars-vertical<span class="token punctuation">;</span>
+            overflow-y: scroll<span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+
+        *,
+        *:before,
+        *:after <span class="token punctuation">{</span>
+            box-sizing: inherit<span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+
+        body <span class="token punctuation">{</span>
+            margin: <span class="token number">0</span><span class="token punctuation">;</span>
+            background: <span class="token comment">#fafafa;</span>
+        <span class="token punctuation">}</span>
+    <span class="token operator">&lt;</span>/style<span class="token operator">&gt;</span>
+<span class="token operator">&lt;</span>/head<span class="token operator">&gt;</span>
+
+<span class="token operator">&lt;</span>body<span class="token operator">&gt;</span>
+    <span class="token operator">&lt;</span>div <span class="token assign-left variable">id</span><span class="token operator">=</span><span class="token string">"swagger-ui"</span><span class="token operator">&gt;</span><span class="token operator">&lt;</span>/div<span class="token operator">&gt;</span>
+
+    <span class="token operator">&lt;</span>script <span class="token assign-left variable">src</span><span class="token operator">=</span><span class="token string">"./swagger-ui-bundle.js"</span><span class="token operator">&gt;</span><span class="token operator">&lt;</span>/script<span class="token operator">&gt;</span>
+    <span class="token operator">&lt;</span>script <span class="token assign-left variable">src</span><span class="token operator">=</span><span class="token string">"./swagger-ui-standalone-preset.js"</span><span class="token operator">&gt;</span><span class="token operator">&lt;</span>/script<span class="token operator">&gt;</span>
+    <span class="token operator">&lt;</span>script<span class="token operator">&gt;</span>
+        window.onload <span class="token operator">=</span> <span class="token function-name function">function</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            const ui <span class="token operator">=</span> SwaggerUIBundle<span class="token punctuation">(</span><span class="token punctuation">{</span>
+                url: <span class="token string">"/swagger/doc.json"</span>,
+                dom_id: <span class="token string">'#swagger-ui'</span>,
+                presets: <span class="token punctuation">[</span>
+                    SwaggerUIBundle.presets.apis,
+                    SwaggerUIStandalonePreset
+                <span class="token punctuation">]</span>,
+                layout: <span class="token string">"BaseLayout"</span>,
+                deepLinking: <span class="token boolean">true</span>
+            <span class="token punctuation">}</span><span class="token punctuation">)</span>
+        <span class="token punctuation">}</span>
+    <span class="token operator">&lt;</span>/script<span class="token operator">&gt;</span>
+<span class="token operator">&lt;</span>/body<span class="token operator">&gt;</span>
+
+<span class="token operator">&lt;</span>/html<span class="token operator">&gt;</span>
+</code></pre>
+<p>然后，您需要将 Swagger UI 目录映射到您的 HTTP 服务器上。在 Go 语言中，您可以使用 http.FileServer() 函数来提供静态文件服务，并使用路由器将它们映射到正确的 URL。在这个例子里，我们使用以下代码将 Swagger UI 映射到 /swagger/ URL：</p>
+<pre><code class="prism language-bash">router.PathPrefix<span class="token punctuation">(</span><span class="token string">"/swagger/"</span><span class="token punctuation">)</span>.Handler<span class="token punctuation">(</span>http.StripPrefix<span class="token punctuation">(</span><span class="token string">"/swagger/"</span>, http.FileServer<span class="token punctuation">(</span>http.Dir<span class="token punctuation">(</span><span class="token string">"./swagger-ui"</span><span class="token punctuation">))</span><span class="token punctuation">))</span>
+
+</code></pre>
+<h2><a id="4_HTTP__208"></a>步骤4：启动 HTTP 服务器</h2>
+<p>最后，您需要启动 HTTP 服务器，以便您的客户端能够连接到您的 API 并使用 Swagger UI 测试工具。您可以使用 Go 语言标准库中的 http.ListenAndServe() 函数来启动 HTTP 服务器。在这个例子里，我们将其设置为监听 :8000 端口，并传递路由器作为处理程序。</p>
+<pre><code class="prism language-bash">package main
+
+<span class="token function">import</span> <span class="token punctuation">(</span>
+	<span class="token string">"encoding/json"</span>
+	<span class="token string">"net/http"</span>
+
+	<span class="token string">"github.com/gorilla/mux"</span>
+<span class="token punctuation">)</span>
+
+<span class="token builtin class-name">type</span> response struct <span class="token punctuation">{</span>
+	Message string <span class="token variable"><span class="token variable">`</span>json:<span class="token string">"message"</span><span class="token variable">`</span></span>
+<span class="token punctuation">}</span>
+
+// hello godoc
+// @Summary 返回问候消息
+// @Description 返回一个带有问候信息的JSON响应
+// @Tags hello
+// @Produce json
+// @Success <span class="token number">200</span> <span class="token punctuation">{</span>object<span class="token punctuation">}</span> response
+// @Router /hello <span class="token punctuation">[</span>get<span class="token punctuation">]</span>
+func hello<span class="token punctuation">(</span>w http.ResponseWriter, r *http.Request<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+	w.Header<span class="token punctuation">(</span><span class="token punctuation">)</span>.Set<span class="token punctuation">(</span><span class="token string">"Content-Type"</span>, <span class="token string">"application/json"</span><span class="token punctuation">)</span>
+	json.NewEncoder<span class="token punctuation">(</span>w<span class="token punctuation">)</span>.Encode<span class="token punctuation">(</span>response<span class="token punctuation">{</span>
+		Message: <span class="token string">"Hello, world!"</span>,
+	<span class="token punctuation">}</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+
+func <span class="token function-name function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+	router :<span class="token operator">=</span> mux.NewRouter<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+	router.HandleFunc<span class="token punctuation">(</span><span class="token string">"/hello"</span>, hello<span class="token punctuation">)</span>.Methods<span class="token punctuation">(</span><span class="token string">"GET"</span><span class="token punctuation">)</span>
+
+	// 将 Swagger UI 目录映射到 /swagger URL
+	router.PathPrefix<span class="token punctuation">(</span><span class="token string">"/swagger/"</span><span class="token punctuation">)</span>.Handler<span class="token punctuation">(</span>http.StripPrefix<span class="token punctuation">(</span><span class="token string">"/swagger/"</span>, http.FileServer<span class="token punctuation">(</span>http.Dir<span class="token punctuation">(</span><span class="token string">"./swagger-ui"</span><span class="token punctuation">))</span><span class="token punctuation">))</span>
+
+	http.ListenAndServe<span class="token punctuation">(</span><span class="token string">":8000"</span>, router<span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+
+</code></pre>
+<p>https://github.com/swagger-api/swagger-ui<br>
+下载放到其项目目录<br>
+<img src="https://img-blog.csdnimg.cn/a51d31c43da64ae19c16f3532fa9eba6.png" alt="在这里插入图片描述"></p>
+<p><img src="https://img-blog.csdnimg.cn/8626e1367545420d929a4379be5651b6.png" alt="在这里插入图片描述"></p>
+</div>
+</body>
+
+</html>
